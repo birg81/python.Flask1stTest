@@ -1,0 +1,73 @@
+{# Show Query #}
+{% extends 'mainView.html' %}
+
+{% block headOfPage %}
+<script async>
+const deletePerson = async (id) => {
+	const affected = (confirm(`Delete {{sql_fields[0]}}: ${id}?`))
+		?	await fetch(
+				`./api/${id}`, {
+					method: 'DELETE'
+				}
+			).then(
+				response => response.json()
+			).then(
+				j => parseInt(j.affected_rows)
+			)
+		:	0;
+	if(affected === 0)
+		alert('Problema Eliminazione');
+	else
+		location.reload();
+}
+</script>
+{% endblock headOfPage %}
+
+{% block bodyOfPage %}
+<table class="table table-striped">
+<thead class="table-dark">
+	<tr>
+		<td>&#x1f6e0;</td>
+{% for cell in sql_fields[1:] %}
+	<th scope="col">{{ cell }}</th>
+{% endfor %}
+	</tr>
+</thead class="table-warring">
+<form>
+<tr>
+	<td>
+		<input type="submit" value="&#x2714;" class="btn btn-outline-success" />
+	</td>
+{% for cell in sql_fields[1:] %}
+	<th scope="col">
+		<input
+			type="text"
+			name="{{cell}}"
+			required
+			class="form-control"
+			placeholder="insert {{cell}}"
+		/>
+	</th>
+{% endfor %}
+</tr>
+</form>
+<thead>
+<tbody>
+{% for row in sql_tab %}
+	<tr>
+		<th>
+			<input
+				type="button"
+				onclick="javascript:deletePerson({{row[0]}})"
+				class="btn btn-outline-danger"
+				value="&#x274c;"
+			/>
+		</th>
+{% for cell in row[1:] %}
+		<td>{{ cell }}</td>
+{% endfor %}
+	</tr>
+{% endfor %}
+</tbody>
+</table>
+{% endblock bodyOfPage %}
